@@ -1,8 +1,7 @@
 /* eslint-disable no-unused-vars */
 import React from 'react';
-import styled from 'styled-components/macro';
+import styled, {keyframes} from 'styled-components/macro';
 import { DialogOverlay, DialogContent } from '@reach/dialog';
-
 import { QUERIES, WEIGHTS } from '../../constants';
 
 import UnstyledButton from '../UnstyledButton';
@@ -11,55 +10,98 @@ import VisuallyHidden from '../VisuallyHidden';
 
 const MobileMenu = ({ isOpen, onDismiss }) => {
   return (
-    <Overlay isOpen={isOpen} onDismiss={onDismiss}>
-      <Content aria-label="Menu">
-        <CloseButton onClick={onDismiss}>
-          <Icon id="close" />
-          <VisuallyHidden>Dismiss menu</VisuallyHidden>
-        </CloseButton>
-        <Filler />
-        <Nav>
-          <NavLink href="/sale">Sale</NavLink>
-          <NavLink href="/new">New&nbsp;Releases</NavLink>
-          <NavLink href="/men">Men</NavLink>
-          <NavLink href="/women">Women</NavLink>
-          <NavLink href="/kids">Kids</NavLink>
-          <NavLink href="/collections">Collections</NavLink>
-        </Nav>
-        <Footer>
-          <SubLink href="/terms">Terms and Conditions</SubLink>
-          <SubLink href="/privacy">Privacy Policy</SubLink>
-          <SubLink href="/contact">Contact Us</SubLink>
-        </Footer>
-      </Content>
-    </Overlay>
+      <Modal isOpen={isOpen} onDismiss={onDismiss}>
+        <Backdrop />
+        <Content aria-label="Menu" >
+          <InnerWrapper>
+            <CloseButton onClick={onDismiss}>
+              <Icon id="close" />
+              <VisuallyHidden>Dismiss menu</VisuallyHidden>
+            </CloseButton>
+            <Filler />
+            <Nav>
+              <NavLink href="/sale">Sale</NavLink>
+              <NavLink href="/new">New&nbsp;Releases</NavLink>
+              <NavLink href="/men">Men</NavLink>
+              <NavLink href="/women">Women</NavLink>
+              <NavLink href="/kids">Kids</NavLink>
+              <NavLink href="/collections">Collections</NavLink>
+            </Nav>
+            <Footer>
+              <SubLink href="/terms">Terms and Conditions</SubLink>
+              <SubLink href="/privacy">Privacy Policy</SubLink>
+              <SubLink href="/contact">Contact Us</SubLink>
+            </Footer>
+          </InnerWrapper>
+        </Content>
+      </Modal>
   );
 };
 
-const Overlay = styled(DialogOverlay)`
+const fadeIn = keyframes`
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+`;
+
+const slideIn = keyframes`
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0%);
+  }
+`;
+
+const Backdrop = styled.div`
+  background-color: var(--color-backdrop);
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  pointer-events: none;
+  animation: ${fadeIn} 1000ms ease-out;
+`;
+
+const Modal = styled(DialogOverlay)`
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: var(--color-backdrop);
+  background: transparent;
   display: flex;
   justify-content: flex-end;
 `;
 
 const Content = styled(DialogContent)`
+  --overfill: 16px;
+  position: relative;
   background: white;
-  width: 300px;
-  height: 100%;
-  padding: 24px 32px;
+  width: calc(300px + var(--overfill));
+  margin-right: calc(var(--overfill) * -1);  
+  @media (prefers-reduced-motion: no-preference) {
+    animation: ${slideIn} 400ms 250ms cubic-bezier(0, 0.6, 0.32, 1.06) both;
+  }
+`;
+
+const InnerWrapper = styled.div`
   display: flex;
   flex-direction: column;
+  height: 100%;
+  padding: 24px 32px;
+  
+  animation: ${fadeIn} 600ms 400ms ease-out backwards;
 `;
 
 const CloseButton = styled(UnstyledButton)`
   position: absolute;
   top: 10px;
-  right: 0;
+  right: var(--overfill);
   padding: 16px;
 `;
 
